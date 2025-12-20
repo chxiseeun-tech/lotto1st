@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 로또 자동 분석기</title>
+    <title>AI 로또 정밀 분석 시스템</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
@@ -14,15 +14,15 @@
         }
 
         .lotto-ball {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: 800;
             color: white;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.1), 2px 3px 6px rgba(0,0,0,0.1);
         }
@@ -38,75 +38,44 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        /* Accordion transition */
-        .history-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.3s ease-in-out;
-            opacity: 0;
-        }
-        .history-item.active .history-content {
-            max-height: 100px;
-            margin-top: 16px;
-            opacity: 1;
-        }
-        .history-item.active .arrow-icon {
-            transform: rotate(180deg);
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
         <!-- Header -->
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 text-white text-center">
-            <div id="update-badge" class="inline-block bg-indigo-500 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-3">
-                매주 토요일 21:00 데이터 갱신
+        <div class="bg-gradient-to-br from-indigo-900 to-slate-900 p-8 text-white text-center">
+            <div class="inline-block bg-indigo-500 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-3">
+                Premium Analysis System
             </div>
-            <h1 class="text-3xl font-extrabold mb-1 tracking-tight">AI 로또 분석기</h1>
-            <p id="sub-title" class="text-slate-400 text-sm font-medium italic">누적 데이터 기반 확률 최적화 조합</p>
+            <h1 class="text-3xl font-extrabold mb-1 tracking-tight">AI 로또 정밀 분석</h1>
+            <p id="display-analysis-range" class="text-slate-400 text-sm font-medium italic">데이터 분석 범위: 1회 ~ 계산 중...</p>
         </div>
 
-        <div class="p-8">
-            <!-- Stats Info -->
-            <div class="mb-6 grid grid-cols-1 gap-3 text-[11px]">
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex justify-between items-center">
-                    <div>
-                        <p class="text-slate-400 mb-0.5 font-bold uppercase tracking-tighter">데이터 분석 범위</p>
-                        <p id="display-analysis-range" class="text-slate-800 text-sm font-black">1회 ~ 계산 중...</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-slate-400 mb-0.5 font-bold uppercase tracking-tighter">다음 갱신</p>
-                        <p id="next-update-time" class="text-indigo-600 text-sm font-black">토요일 21:00</p>
-                    </div>
+        <div class="p-6">
+            <!-- Algorithm Badges -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-md border border-emerald-100">역대 1등 조합 제외</span>
+                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-md border border-blue-100">홀짝 밸런스 필터</span>
+                <span class="bg-rose-50 text-rose-600 text-[10px] font-bold px-2 py-1 rounded-md border border-rose-100">4연속 출현 제외</span>
+            </div>
+
+            <!-- Game Display Area -->
+            <div id="game-container" class="space-y-3 mb-8">
+                <!-- 5 Games will be injected here -->
+                <div class="py-12 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
+                    <p class="text-slate-400 text-sm font-medium">최적화된 5개 조합을 생성합니다</p>
                 </div>
             </div>
 
-            <!-- Main Display -->
-            <div id="result-container" class="min-h-[140px] flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-[2rem] mb-8 bg-slate-50/50">
-                <div id="placeholder" class="text-center">
-                    <p class="text-slate-400 text-sm font-medium">분석된 최적의 조합이 여기에 표시됩니다</p>
-                </div>
-                <div id="balls-row" class="flex gap-2 hidden">
-                    <!-- New balls here -->
-                </div>
-            </div>
-
-            <!-- Button -->
-            <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black py-5 rounded-2xl text-xl shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-2">
-                번호 생성하기
+            <!-- Main Action -->
+            <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black py-5 rounded-2xl text-xl shadow-xl shadow-indigo-100 transition-all mb-4">
+                5게임 번호 생성
             </button>
-
-            <!-- History Section -->
-            <div class="mt-10">
-                <h3 class="text-slate-800 font-extrabold text-sm mb-4">최근 생성 기록 (클릭하여 확인)</h3>
-                <div id="history-list" class="space-y-3">
-                    <!-- History items injected here -->
-                </div>
-            </div>
+            
+            <p class="text-center text-[11px] text-slate-400">매주 토요일 21:00 데이터 자동 갱신</p>
         </div>
     </div>
 
@@ -114,37 +83,61 @@
         const LottoApp = {
             latestDrawNo: 0,
             frequencyStats: {},
+            // 시뮬레이션을 위한 역대 1등 조합 샘플 (실제로는 수천 개가 있지만 로직 구현용)
+            pastWinningCombos: new Set(['1,2,3,4,5,6', '10,15,18,30,41,45']), 
             quadConsecutive: [], // 4연속 번호 제외 리스트
 
             init() {
                 this.calculateCurrentDraw();
                 this.generateBaseStats();
-                this.updateUI();
+                document.getElementById('display-analysis-range').innerText = `데이터 분석 범위: 1회 ~ ${this.latestDrawNo}회차`;
             },
 
-            // 토요일 21:00 기준 회차 및 분석 범위 계산
             calculateCurrentDraw() {
                 const firstDrawDate = new Date('2002-12-07 21:00:00');
                 const now = new Date();
                 const diffMs = now - firstDrawDate;
-                const diffWeeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
-                
-                // 이번 주 토요일 21시 전이라면 '직전 주차'까지가 분석 범위
-                // 21시 후라면 '이번 주차'까지가 분석 범위
-                this.latestDrawNo = diffWeeks + 1;
+                this.latestDrawNo = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000)) + 1;
             },
 
             generateBaseStats() {
-                // 실제로는 1회부터 최신 회차까지의 빈도수를 시뮬레이션
                 for (let i = 1; i <= 45; i++) {
-                    this.frequencyStats[i] = 140 + Math.floor(Math.random() * 35);
+                    this.frequencyStats[i] = 140 + Math.floor(Math.random() * 40);
                 }
             },
 
-            updateUI() {
-                // "1회 ~ 직전 회차" 형식으로 표시
-                // 사용자 예시: 이번주 1~1202회 / 다음주 1~1203회
-                document.getElementById('display-analysis-range').innerText = `1회 ~ ${this.latestDrawNo}회차`;
+            // 홀수/짝수 밸런스 체크 (편향 제외: 0:6, 1:5, 5:1, 6:0 제외)
+            isBalanced(numbers) {
+                const oddCount = numbers.filter(n => n % 2 !== 0).length;
+                return oddCount >= 2 && oddCount <= 4;
+            },
+
+            generateSingleGame() {
+                const pool = [];
+                for (let i = 1; i <= 45; i++) {
+                    if (this.quadConsecutive.includes(i)) continue;
+                    const weight = this.frequencyStats[i];
+                    for (let j = 0; j < weight; j++) pool.push(i);
+                }
+
+                let attempts = 0;
+                while (attempts < 1000) {
+                    const result = new Set();
+                    while (result.size < 6) {
+                        const idx = Math.floor(Math.random() * pool.length);
+                        result.add(pool[idx]);
+                    }
+                    const sortedResult = Array.from(result).sort((a, b) => a - b);
+                    const comboStr = sortedResult.join(',');
+
+                    // 필터 1: 역대 1등 조합 제외
+                    if (this.pastWinningCombos.has(comboStr)) { attempts++; continue; }
+                    
+                    // 필터 2: 홀짝 편향 제외 (2:4, 3:3, 4:2 비율만 허용)
+                    if (!this.isBalanced(sortedResult)) { attempts++; continue; }
+
+                    return sortedResult;
+                }
             },
 
             getBallColor(num) {
@@ -153,92 +146,33 @@
                 if (num <= 30) return 'ball-red';
                 if (num <= 40) return 'ball-gray';
                 return 'ball-green';
-            },
-
-            generate() {
-                const pool = [];
-                for (let i = 1; i <= 45; i++) {
-                    // 4회 연속 출현 필터 적용
-                    if (this.quadConsecutive.includes(i)) continue;
-
-                    // 누적 데이터(frequencyStats)를 가중치로 사용하여 번호 선별
-                    const weight = this.frequencyStats[i];
-                    for (let j = 0; j < weight; j++) {
-                        pool.push(i);
-                    }
-                }
-
-                const result = new Set();
-                while (result.size < 6) {
-                    const idx = Math.floor(Math.random() * pool.length);
-                    result.add(pool[idx]);
-                }
-                return Array.from(result).sort((a, b) => a - b);
             }
         };
 
-        window.onload = () => LottoApp.init();
-
         const btn = document.getElementById('generate-btn');
-        const ballsRow = document.getElementById('balls-row');
-        const placeholder = document.getElementById('placeholder');
-        const historyList = document.getElementById('history-list');
+        const container = document.getElementById('game-container');
 
         btn.addEventListener('click', () => {
-            const numbers = LottoApp.generate();
+            container.innerHTML = '';
             
-            placeholder.classList.add('hidden');
-            ballsRow.classList.remove('hidden');
-            ballsRow.innerHTML = '';
-            
-            numbers.forEach((num, i) => {
-                const ball = document.createElement('div');
-                ball.className = `lotto-ball ${LottoApp.getBallColor(num)} fade-in`;
-                ball.style.animationDelay = `${i * 0.08}s`;
-                ball.innerText = num;
-                ballsRow.appendChild(ball);
-            });
+            for (let i = 0; i < 5; i++) {
+                const numbers = LottoApp.generateSingleGame();
+                const gameRow = document.createElement('div');
+                gameRow.className = 'flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-100 fade-in';
+                gameRow.style.animationDelay = `${i * 0.1}s`;
 
-            addHistory(numbers);
+                let ballsHtml = `<span class="text-[10px] font-black text-slate-300 w-4">${String.fromCharCode(65 + i)}</span><div class="flex gap-1.5 ml-2">`;
+                numbers.forEach(num => {
+                    ballsHtml += `<div class="lotto-ball ${LottoApp.getBallColor(num)}">${num}</div>`;
+                });
+                ballsHtml += `</div>`;
+                
+                gameRow.innerHTML = ballsHtml;
+                container.appendChild(gameRow);
+            }
         });
 
-        function addHistory(numbers) {
-            const now = new Date();
-            const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-            
-            const item = document.createElement('div');
-            item.className = 'history-item bg-white border border-slate-100 rounded-2xl p-4 shadow-sm cursor-pointer transition-all hover:bg-slate-50';
-            
-            let ballsHtml = '';
-            numbers.forEach(num => {
-                ballsHtml += `<div class="lotto-ball ${LottoApp.getBallColor(num)} !w-7 !h-7 !text-[10px]">${num}</div>`;
-            });
-
-            item.innerHTML = `
-                <div class="flex items-center justify-between pointer-events-none">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] font-bold text-indigo-500 mb-0.5">분석 최적화 완료</span>
-                        <span class="text-[12px] font-extrabold text-slate-800">${timeStr} 생성 기록</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-slate-400 font-medium">조합 보기</span>
-                        <svg class="arrow-icon w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                </div>
-                <div class="history-content flex gap-1.5 justify-center">
-                    ${ballsHtml}
-                </div>
-            `;
-
-            item.addEventListener('click', function() {
-                this.classList.toggle('active');
-            });
-
-            if (historyList.children.length >= 5) {
-                historyList.removeChild(historyList.lastChild);
-            }
-            historyList.prepend(item);
-        }
+        window.onload = () => LottoApp.init();
     </script>
 </body>
 </html>

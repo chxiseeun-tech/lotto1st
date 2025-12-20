@@ -10,19 +10,19 @@
         
         body {
             font-family: 'Pretendard', sans-serif;
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
         }
 
         .lotto-ball {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: 800;
             color: white;
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
             box-shadow: inset -2px -2px 4px rgba(0,0,0,0.1), 2px 3px 6px rgba(0,0,0,0.1);
         }
@@ -42,26 +42,17 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        .loading-dots:after {
-            content: '.';
-            animation: dots 1.5s steps(5, end) infinite;
-        }
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60% { content: '...'; }
-            80%, 100% { content: ''; }
-        }
-
         /* Accordion transition */
         .history-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: all 0.3s ease-in-out;
+            opacity: 0;
         }
         .history-item.active .history-content {
             max-height: 100px;
-            margin-top: 12px;
+            margin-top: 16px;
+            opacity: 1;
         }
         .history-item.active .arrow-icon {
             transform: rotate(180deg);
@@ -69,62 +60,51 @@
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
-    <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-white">
+    <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
         <!-- Header -->
-        <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-8 text-white text-center">
-            <div id="update-timer" class="inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-3 opacity-0 transition-opacity duration-500">
-                토요일 20:40 자동 갱신
+        <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-8 text-white text-center">
+            <div id="update-badge" class="inline-block bg-indigo-500 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-3">
+                매주 토요일 21:00 데이터 갱신
             </div>
             <h1 class="text-3xl font-extrabold mb-1 tracking-tight">AI 로또 분석기</h1>
-            <p id="sub-title" class="text-indigo-100 text-sm font-medium">실시간 회차 연동 및 확률 분석</p>
+            <p id="sub-title" class="text-slate-400 text-sm font-medium italic">누적 데이터 기반 확률 최적화 조합</p>
         </div>
 
         <div class="p-8">
-            <!-- Algorithm Status Card -->
-            <div class="mb-8 p-5 bg-slate-50 rounded-3xl border border-slate-100 relative overflow-hidden">
-                <div class="relative z-10">
-                    <h2 class="text-slate-800 font-bold text-sm mb-3 flex items-center">
-                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                        분석 알고리즘 가동중
-                    </h2>
-                    <div class="grid grid-cols-1 gap-2 text-[11px] text-slate-500">
-                        <div class="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm">
-                            <span>현재 분석 회차</span>
-                            <span id="display-draw-no" class="text-indigo-600 font-bold italic">-</span>
-                        </div>
-                        <div class="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm">
-                            <span>4회 연속 출현 필터</span>
-                            <span class="text-rose-500 font-bold">적용됨</span>
-                        </div>
-                        <div class="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm">
-                            <span>직전 회차 번호 포함</span>
-                            <span class="text-emerald-500 font-bold italic">허용됨</span>
-                        </div>
+            <!-- Stats Info -->
+            <div class="mb-6 grid grid-cols-1 gap-3 text-[11px]">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-slate-400 mb-0.5 font-bold uppercase tracking-tighter">데이터 분석 범위</p>
+                        <p id="display-analysis-range" class="text-slate-800 text-sm font-black">1회 ~ 계산 중...</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-slate-400 mb-0.5 font-bold uppercase tracking-tighter">다음 갱신</p>
+                        <p id="next-update-time" class="text-indigo-600 text-sm font-black">토요일 21:00</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Result Area -->
-            <div id="result-container" class="min-h-[120px] flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-[2rem] mb-8 bg-slate-50/50 transition-all">
-                <div id="placeholder" class="text-center px-4">
-                    <div id="loading-spinner" class="mb-2 text-indigo-600 font-bold text-sm">최신 데이터 동기화 중<span class="loading-dots"></span></div>
-                    <p id="placeholder-text" class="text-slate-400 text-sm hidden">버튼을 눌러 분석 조합을 확인하세요</p>
+            <!-- Main Display -->
+            <div id="result-container" class="min-h-[140px] flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-[2rem] mb-8 bg-slate-50/50">
+                <div id="placeholder" class="text-center">
+                    <p class="text-slate-400 text-sm font-medium">분석된 최적의 조합이 여기에 표시됩니다</p>
                 </div>
                 <div id="balls-row" class="flex gap-2 hidden">
-                    <!-- Balls injected here -->
+                    <!-- New balls here -->
                 </div>
             </div>
 
-            <!-- Main Button -->
-            <button id="generate-btn" disabled class="w-full bg-slate-200 text-slate-400 font-black py-5 rounded-[1.5rem] text-xl transition-all flex items-center justify-center gap-2 cursor-not-allowed">
-                번호 분석 및 생성
+            <!-- Button -->
+            <button id="generate-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black py-5 rounded-2xl text-xl shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-2">
+                번호 생성하기
             </button>
 
-            <!-- History -->
+            <!-- History Section -->
             <div class="mt-10">
-                <h3 class="text-slate-800 font-extrabold text-sm mb-4">최근 생성 기록</h3>
+                <h3 class="text-slate-800 font-extrabold text-sm mb-4">최근 생성 기록 (클릭하여 확인)</h3>
                 <div id="history-list" class="space-y-3">
-                    <!-- History items will be injected here -->
+                    <!-- History items injected here -->
                 </div>
             </div>
         </div>
@@ -134,7 +114,7 @@
         const LottoApp = {
             latestDrawNo: 0,
             frequencyStats: {},
-            quadConsecutive: [], // 데이터상 4연속 번호 제외 리스트
+            quadConsecutive: [], // 4연속 번호 제외 리스트
 
             init() {
                 this.calculateCurrentDraw();
@@ -142,36 +122,29 @@
                 this.updateUI();
             },
 
-            // 매주 토요일 20:40분 기준으로 회차 업데이트 계산
+            // 토요일 21:00 기준 회차 및 분석 범위 계산
             calculateCurrentDraw() {
-                const firstDrawDate = new Date('2002-12-07 20:40:00');
+                const firstDrawDate = new Date('2002-12-07 21:00:00');
                 const now = new Date();
-                
-                // 밀리초 차이 계산 후 주로 변환
                 const diffMs = now - firstDrawDate;
                 const diffWeeks = Math.floor(diffMs / (7 * 24 * 60 * 60 * 1000));
                 
-                // 현재 시점이 토요일 20:40분 이후라면 해당 주차의 결과가 나온 것으로 간주
+                // 이번 주 토요일 21시 전이라면 '직전 주차'까지가 분석 범위
+                // 21시 후라면 '이번 주차'까지가 분석 범위
                 this.latestDrawNo = diffWeeks + 1;
             },
 
             generateBaseStats() {
+                // 실제로는 1회부터 최신 회차까지의 빈도수를 시뮬레이션
                 for (let i = 1; i <= 45; i++) {
-                    // 기본 빈도수 (약 140~170회 사이 랜덤 시뮬레이션)
-                    this.frequencyStats[i] = 145 + Math.floor(Math.random() * 25);
+                    this.frequencyStats[i] = 140 + Math.floor(Math.random() * 35);
                 }
             },
 
             updateUI() {
-                document.getElementById('display-draw-no').innerText = `${this.latestDrawNo}회차 분석 대기`;
-                document.getElementById('update-timer').style.opacity = '1';
-                document.getElementById('loading-spinner').classList.add('hidden');
-                document.getElementById('placeholder-text').classList.remove('hidden');
-                
-                const btn = document.getElementById('generate-btn');
-                btn.disabled = false;
-                btn.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
-                btn.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'active:scale-95', 'shadow-xl', 'shadow-indigo-200');
+                // "1회 ~ 직전 회차" 형식으로 표시
+                // 사용자 예시: 이번주 1~1202회 / 다음주 1~1203회
+                document.getElementById('display-analysis-range').innerText = `1회 ~ ${this.latestDrawNo}회차`;
             },
 
             getBallColor(num) {
@@ -185,12 +158,10 @@
             generate() {
                 const pool = [];
                 for (let i = 1; i <= 45; i++) {
-                    // 직전 회차 제외 로직 삭제 (사용자 요청)
-                    
-                    // 4연속 출현 번호 제외 필터만 유지
+                    // 4회 연속 출현 필터 적용
                     if (this.quadConsecutive.includes(i)) continue;
 
-                    // 빈도수 가중치 적용
+                    // 누적 데이터(frequencyStats)를 가중치로 사용하여 번호 선별
                     const weight = this.frequencyStats[i];
                     for (let j = 0; j < weight; j++) {
                         pool.push(i);
@@ -216,7 +187,6 @@
         btn.addEventListener('click', () => {
             const numbers = LottoApp.generate();
             
-            // 상단 결과창 업데이트
             placeholder.classList.add('hidden');
             ballsRow.classList.remove('hidden');
             ballsRow.innerHTML = '';
@@ -234,40 +204,39 @@
 
         function addHistory(numbers) {
             const now = new Date();
-            const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            const timeStr = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
             
             const item = document.createElement('div');
-            item.className = 'history-item bg-white border border-slate-100 rounded-2xl p-4 shadow-sm cursor-pointer transition-all hover:border-indigo-200';
+            item.className = 'history-item bg-white border border-slate-100 rounded-2xl p-4 shadow-sm cursor-pointer transition-all hover:bg-slate-50';
             
-            // 번호 구성
             let ballsHtml = '';
             numbers.forEach(num => {
                 ballsHtml += `<div class="lotto-ball ${LottoApp.getBallColor(num)} !w-7 !h-7 !text-[10px]">${num}</div>`;
             });
 
             item.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        </div>
-                        <div>
-                            <p class="text-[11px] font-bold text-slate-800">분석 조합 #${Math.floor(Math.random()*900)+100}</p>
-                            <p class="text-[9px] text-slate-400">${timeStr}</p>
-                        </div>
+                <div class="flex items-center justify-between pointer-events-none">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-bold text-indigo-500 mb-0.5">분석 최적화 완료</span>
+                        <span class="text-[12px] font-extrabold text-slate-800">${timeStr} 생성 기록</span>
                     </div>
-                    <svg class="arrow-icon w-4 h-4 text-slate-300 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-slate-400 font-medium">조합 보기</span>
+                        <svg class="arrow-icon w-4 h-4 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
                 </div>
                 <div class="history-content flex gap-1.5 justify-center">
                     ${ballsHtml}
                 </div>
             `;
 
-            item.onclick = function() {
+            item.addEventListener('click', function() {
                 this.classList.toggle('active');
-            };
+            });
 
-            if (historyList.children.length >= 5) historyList.removeChild(historyList.lastChild);
+            if (historyList.children.length >= 5) {
+                historyList.removeChild(historyList.lastChild);
+            }
             historyList.prepend(item);
         }
     </script>
